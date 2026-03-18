@@ -1,0 +1,35 @@
+# Ignore as dependências e pastas geradas dentro de 'mobile'
+mobile/node_modules/
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+mobile/expo-env.d.ts
+
+# Se você já tiver ou planeja ter a pasta 'web', ignore as dependências dela também
+web/node_modules/
+web/.next/
+web/build/
+
+# Arquivo de variáveis de ambiente (Segurança Crítica)
+mobile/.env
+.env
+
+# Native (Arquivos dentro da pasta mobile)
+mobile/.kotlin/
+mobile/*.jks
+mobile/*.p8
+mobile/*.p12
+mobile/*.key
+mobile/ios
+mobile/android
+
+# Metro e Debug
+mobile/.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Sistema e Diversos
+.DS_Store
+*.pem
+*.tsbuildinfo
