@@ -8,29 +8,78 @@ import {
   KeyboardAvoidingView, 
   Platform,
   ScrollView,
-  Alert
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 import FloatingInput from '../components/FloatingInput';
+import { supabase } from '../services/supabase';
 
 export default function Registrar({ navigation }: any) {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
-  const handleRegistro = () => {
+  const handleRegistro = async () => {
+    // 1. Validações básicas (Usando Alertas com 3 argumentos fixos)
     if (!nome || !email || !senha || !confirmarSenha) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos.");
+      Alert.alert("Aviso", "Preencha todos os campos.", [{ text: "OK" }]);
       return;
     }
 
     if (senha !== confirmarSenha) {
-      Alert.alert("Erro", "As senhas não conferem.");
+      Alert.alert("Aviso", "As senhas não conferem.", [{ text: "OK" }]);
       return;
     }
 
-    console.log("Registrando:", { nome, email });
-    // Futura integração com SQLite e Supabase aqui
+    if (senha.length < 6) {
+      Alert.alert("Aviso", "A senha deve ter no mínimo 6 caracteres.", [{ text: "OK" }]);
+      return;
+    }
+
+    setCarregando(true);
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: senha,
+        options: {
+          data: {
+            full_name: nome.trim(),
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Alerta de Sucesso com os 3 argumentos exatos (Título, Mensagem, Botões)
+        Alert.alert(
+          "Sucesso!", 
+          "Verifique seu e-mail para confirmar o cadastro.",
+          [{ text: "OK", onPress: () => navigation.navigate('Login') }]
+        );
+      }
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Alerta corrigido para evitar erro de TurboModule no Android
+        Alert.alert(
+          "Sucesso!", 
+          "Conta criada! Verifique seu e-mail para confirmar o cadastro.",
+          [{ text: "Entendido", onPress: () => navigation.navigate('Login') }]
+        );
+      }
+
+    } catch (error: any) {
+      console.error("Erro no registro:", error.message);
+      // Alerta de erro também simplificado
+      Alert.alert("Erro no Cadastro", error.message);
+    } finally {
+      setCarregando(false);
+    }
   };
 
   return (
@@ -38,9 +87,11 @@ export default function Registrar({ navigation }: any) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer} 
+        showsVerticalScrollIndicator={false}
+      >
         
-        {/* Logo Centralizado */}
         <View style={styles.logoContainer}>
           <Image 
             source={require('../../assets/icons/icon.png')}
@@ -50,7 +101,6 @@ export default function Registrar({ navigation }: any) {
           <Text style={styles.appName}>CONTA MOBI</Text>
         </View>
 
-        {/* Box de Registro com bordas arredondadas */}
         <View style={styles.registerBox}>
           <Text style={styles.welcomeText}>Crie sua conta gratuita</Text>
           
@@ -69,7 +119,6 @@ export default function Registrar({ navigation }: any) {
             autoCapitalize="none"
           />
 
-          {/* Senha e Confirmar Senha logo abaixo do E-mail conforme pedido */}
           <FloatingInput 
             label="Senha"
             value={senha}
@@ -87,12 +136,16 @@ export default function Registrar({ navigation }: any) {
           <TouchableOpacity 
             style={[
               styles.button, 
-              (!nome || !email || !senha || !confirmarSenha) && styles.buttonDisabled
+              (!nome || !email || !senha || !confirmarSenha || carregando) && styles.buttonDisabled
             ]} 
             onPress={handleRegistro}
-            disabled={!nome || !email || !senha || !confirmarSenha}
+            disabled={!nome || !email || !senha || !confirmarSenha || carregando}
           >
-            <Text style={styles.buttonText}>CRIAR CONTA</Text>
+            {carregando ? (
+              <ActivityIndicator color="#FFF" />
+            ) : (
+              <Text style={styles.buttonText}>CRIAR CONTA</Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -113,12 +166,13 @@ export default function Registrar({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1FFFA', // Fundo Menta
+    backgroundColor: '#F1FFFA', 
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
     padding: 25,
+    paddingBottom: 40,
   },
   logoContainer: {
     alignItems: 'center',
@@ -131,7 +185,7 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#008552', // Verde Esmeralda
+    color: '#008552', 
     marginTop: 8,
     letterSpacing: 1.2,
   },
@@ -148,19 +202,19 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 15,
     color: '#666',
-    marginBottom: 20,
+    marginBottom: 20, 
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#008552', // Esmeralda
+    backgroundColor: '#008552', 
     borderRadius: 15,
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 25,
   },
   buttonDisabled: {
-    backgroundColor: '#A5D6A7', // Verde clarinho quando desabilitado
+    backgroundColor: '#A5D6A7', 
   },
   buttonText: {
     color: '#FFF',
