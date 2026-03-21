@@ -1,5 +1,7 @@
+import { login } from '../services/auth';
 import React, { useState } from 'react';
 import {
+  Alert,
   StyleSheet,
   View,
   Text,
@@ -12,13 +14,27 @@ import {
 import FloatingInput from '../components/FloatingInput';
 import { colors, borderRadius, spacing, shadows, typography } from '../theme';
 
-export default function LoginScreen({ navigation }: any) {
+export default function Login({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
-  const handleLogin = () => {
-  navigation.navigate('Home');
-  };
+  const handleLogin = async () => {
+  if (!email || !senha) {
+    Alert.alert('Atenção', 'Preencha o e-mail e a senha.');
+    return;
+  }
+
+  setCarregando(true);
+  try {
+    await login(email, senha);
+    navigation.navigate('Home');
+  } catch (error: any) {
+    Alert.alert('Erro ao entrar', error.message);
+  } finally {
+    setCarregando(false);
+  }
+};
 
   return (
     <KeyboardAvoidingView
@@ -53,10 +69,13 @@ export default function LoginScreen({ navigation }: any) {
           />
 
           <TouchableOpacity
-            style={styles.button}
-            onPress={handleLogin}
-          >
-            <Text style={styles.buttonText}>Entrar</Text>
+              style={[styles.button, carregando && { opacity: 0.7 }]}
+              onPress={handleLogin}
+              disabled={carregando}
+            >
+              <Text style={styles.buttonText}>
+                {carregando ? 'Entrando...' : 'Entrar'}
+              </Text>
           </TouchableOpacity>
 
           <TouchableOpacity

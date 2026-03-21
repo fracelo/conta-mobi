@@ -1,21 +1,28 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SplashScreen from '../screens/SplashScreen';
-import LoginScreen from '../screens/LoginScreen';
+import Login from '../screens/Login';
 import Registrar from '../screens/Registrar';
-import HomeScreen from '../screens/Home';
+import Home from '../screens/Home';
+import Usuario from '../screens/Usuario';
 
 const Stack = createNativeStackNavigator();
 
-export default function Routes() {
+interface RoutesProps {
+  logado: boolean;
+}
+
+export default function Routes({ logado }: RoutesProps) {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Navigator
+        screenOptions={{ headerShown: false }}
+        initialRouteName={logado ? 'Home' : 'Login'}
+      >
+        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Registrar" component={Registrar} />
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Usuario" component={Usuario} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -5,10 +5,10 @@
     "version": "1.0.0",
     "icon": "./assets/icons/icon.png",
     "splash": {
-      "image": "./assets/icons/icon.png",
-      "backgroundColor": "#008552",
-      "resizeMode": "contain"
-    },
+        "image": "./assets/icons/icon.png",
+        "backgroundColor": "#008552",
+        "resizeMode": "cover"
+      },
     "assetBundlePatterns": [
       "**/*"
     ],
