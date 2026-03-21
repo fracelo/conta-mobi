@@ -1,68 +1,72 @@
 import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Image, 
-  KeyboardAvoidingView, 
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  KeyboardAvoidingView,
   Platform,
-  ScrollView 
+  ScrollView
 } from 'react-native';
 import FloatingInput from '../components/FloatingInput';
+import { colors, borderRadius, spacing, shadows, typography } from '../theme';
 
 export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
   const handleLogin = () => {
-    console.log("Tentando logar com:", email);
-    // Aqui chamaremos a lógica do Supabase depois
+  navigation.navigate('Home');
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        
-        {/* Logo Centralizado - Usando o caminho dos seus assets */}
+
         <View style={styles.logoContainer}>
-          <Image 
-            source={require('../../icons/icon.png')}
+          <Image
+            source={require('../../assets/icons/icon.png')}
             style={styles.logo}
             resizeMode="contain"
           />
           <Text style={styles.appName}>CONTA MOBI</Text>
         </View>
 
-        {/* Box de Login com bordas arredondadas */}
         <View style={styles.loginBox}>
           <Text style={styles.welcomeText}>Acesse sua conta</Text>
-          
-          <FloatingInput 
+
+          <FloatingInput
             label="E-mail"
             value={email}
             onChangeText={setEmail}
           />
 
-          <FloatingInput 
+          <FloatingInput
             label="Senha"
             value={senha}
             onChangeText={setSenha}
             secureTextEntry
-            />
+          />
 
-            {/* Se quiser manter o comentário, use este formato com chaves e barra-asterisco */}
-            <TouchableOpacity 
-                style={styles.signUpLink}
-                onPress={() => navigation.navigate('Registrar')}
-            >
-                <Text style={styles.signUpText}>
-                    Não tem conta? <Text style={styles.signUpBold}>Cadastre-se</Text>
-                </Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleLogin}
+          >
+            <Text style={styles.buttonText}>Entrar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.signUpLink}
+            onPress={() => navigation.navigate('Registrar')}
+          >
+            <Text style={styles.signUpText}>
+              Não tem conta? <Text style={styles.signUpBold}>Cadastre-se</Text>
+            </Text>
+          </TouchableOpacity>
         </View>
 
       </ScrollView>
@@ -73,68 +77,61 @@ export default function LoginScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1FFFA', // Fundo Menta claro
+    backgroundColor: colors.background,
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 25,
+    padding: spacing.xl,
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: spacing.xxl,
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
   },
   appName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#008552', // Verde Esmeralda
-    marginTop: 10,
-    letterSpacing: 1.5,
+    ...typography.title,
+    color: colors.primary,
+    marginTop: spacing.sm,
   },
   loginBox: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 25, // Bordas bem arredondadas como pedido
-    padding: 25,
-    // Sombra para dar profundidade
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.lg,
+    padding: spacing.xl,
+    ...shadows.card,
   },
   welcomeText: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 25,
+    ...typography.subtitle,
+    color: colors.textLight,
+    marginBottom: spacing.xl,
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#50C878', // Esmeralda
-    borderRadius: 15,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: spacing.sm,
   },
   buttonText: {
-    color: '#FFF',
+    color: colors.white,
     fontSize: 16,
     fontWeight: 'bold',
   },
   signUpLink: {
-    marginTop: 20,
+    marginTop: spacing.lg,
     alignItems: 'center',
   },
   signUpText: {
-    color: '#999',
-    fontSize: 13,
+    ...typography.small,
+    color: colors.textMuted,
   },
   signUpBold: {
-    color: '#3EB489', // Menta
+    color: colors.primaryLight,
     fontWeight: 'bold',
   },
 });

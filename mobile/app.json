@@ -3,11 +3,11 @@
     "name": "Conta Mobi",
     "slug": "conta-mobi",
     "version": "1.0.0",
-    "sdkVersion": "54.0.0",
-    "icon": "./icons/icon.png", 
+    "icon": "./assets/icons/icon.png",
     "splash": {
-      "image": "./icons/icon.png",
-      "backgroundColor": "#008552"
+      "image": "./assets/icons/icon.png",
+      "backgroundColor": "#008552",
+      "resizeMode": "contain"
     },
     "assetBundlePatterns": [
       "**/*"
