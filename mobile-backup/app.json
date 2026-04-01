@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Conta Mobi",
+    "slug": "conta-mobi",
+    "version": "1.0.0",
+    "icon": "./assets/icons/icon.png", 
+    "splash": {
+      "image": "./assets/icons/icon.png",
+      "backgroundColor": "#008552"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
+        "backgroundColor": "#008552"
+      },
+      "package": "com.marcelo.contamobi"
+    },
+    "web": {
+      "favicon": "./assets/icons/favicon.png"
+    },
+    "plugins": [
+      "expo-sqlite"
+    ]
+  }
+}
