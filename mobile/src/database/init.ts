@@ -8,6 +8,7 @@ export const initDatabase = () => {
 
   // APENAS EM DESENVOLVIMENTO — remova antes de publicar!
   db.execSync(`
+    DROP TABLE IF EXISTS categorias; 
     DROP TABLE IF EXISTS logsreceber;
     DROP TABLE IF EXISTS logsenviar;
     DROP TABLE IF EXISTS sync_controle;
@@ -39,6 +40,21 @@ export const initDatabase = () => {
         criado_em TEXT DEFAULT (datetime('now')),
         atualizado_em TEXT DEFAULT (datetime('now')),
         FOREIGN KEY (planouuid) REFERENCES planos (planouuid)
+    );
+
+    -- NOVA TABELA: CATEGORIAS (PLANO DE CONTAS)
+    CREATE TABLE IF NOT EXISTS categorias (
+        categoriauuid TEXT PRIMARY KEY,
+        usuariouuid TEXT NOT NULL,
+        paiuuid TEXT,
+        descricao TEXT NOT NULL,
+        tipo TEXT CHECK(tipo IN ('D', 'C')) NOT NULL,
+        nivel INTEGER NOT NULL DEFAULT 1,
+        aceita_lancamento INTEGER NOT NULL DEFAULT 0,
+        criado_em TEXT DEFAULT (datetime('now')),
+        atualizado_em TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY (usuariouuid) REFERENCES usuarios (usuariouuid),
+        FOREIGN KEY (paiuuid) REFERENCES categorias (categoriauuid)
     );
 
     CREATE TABLE IF NOT EXISTS logsenviar (
@@ -80,19 +96,32 @@ export const initDatabase = () => {
   `);
 
   // ─── MIGRAÇÕES ───────────────────────────────────────────────────
-  // Adiciona colunas novas sem quebrar banco existente
   const migracoes = [
     'ALTER TABLE planos ADD COLUMN limite_transacoes INTEGER',
     'ALTER TABLE planos ADD COLUMN criado_em TEXT DEFAULT (datetime(\'now\'))',
     'ALTER TABLE usuarios ADD COLUMN atualizado_em TEXT DEFAULT (datetime(\'now\'))',
     'ALTER TABLE usuarios ADD COLUMN datavencimento TEXT',
     'ALTER TABLE usuarios ADD COLUMN celular TEXT',
+    // Migração para categorias caso a tabela precise ser criada em bancos já existentes
+    `CREATE TABLE IF NOT EXISTS categorias (
+        categoriauuid TEXT PRIMARY KEY,
+        usuariouuid TEXT NOT NULL,
+        paiuuid TEXT,
+        descricao TEXT NOT NULL,
+        tipo TEXT CHECK(tipo IN ('D', 'C')) NOT NULL,
+        nivel INTEGER NOT NULL DEFAULT 1,
+        aceita_lancamento INTEGER NOT NULL DEFAULT 0,
+        criado_em TEXT DEFAULT (datetime('now')),
+        atualizado_em TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY (usuariouuid) REFERENCES usuarios (usuariouuid),
+        FOREIGN KEY (paiuuid) REFERENCES categorias (categoriauuid)
+    )`
   ];
   for (const sql of migracoes) {
     try { db.execSync(sql); } catch {}
   }
 
-  // ─── PLANOS FIXOS (idênticos ao Supabase) ────────────────────────
+  // ─── PLANOS FIXOS ───────────────────────────────────────────────
   const planoFree = db.getFirstSync(
     'SELECT * FROM planos WHERE planouuid = ?',
     ['e4179d4a-2d4d-457b-80cd-cd00c338d2c1']
@@ -116,6 +145,7 @@ export const initDatabase = () => {
   }
 };
 
+// ... (restante das funções cadastrarPrimeiroUsuario, gravarLog, etc, permanecem iguais)
 // ─── CADASTRO PRIMEIRO USUÁRIO ────────────────────────────────────
 
 export const cadastrarPrimeiroUsuario = (
