@@ -93,6 +93,40 @@ export const initDatabase = () => {
         ultima_sync_recebimento TEXT,
         FOREIGN KEY (usuariouuid) REFERENCES usuarios (usuariouuid)
     );
+
+    -- 1. Catálogo de Bancos (Alimentado por CSV)
+    CREATE TABLE IF NOT EXISTS bancos (
+      codigo_banco INTEGER PRIMARY KEY, -- O código único que você vai importar
+      descricao_banco TEXT NOT NULL,
+      telefone_sac TEXT,
+      codigo_ispb TEXT,
+      icone_url TEXT, -- Caminho para a imagem/ícone
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    -- Tabela agencias (ajustada)
+    CREATE TABLE IF NOT EXISTS agencias (
+      agenciauuid TEXT PRIMARY KEY,
+      usuariouuid TEXT NOT NULL,
+      tipo_registro TEXT CHECK(tipo_registro IN ('B', 'C')), -- B=Banco, C=Caixa/Tesouraria
+      codigo_banco INTEGER NOT NULL, 
+      numero_agencia TEXT, -- Opcional se for Caixa
+      numero_conta TEXT,   -- Opcional se for Caixa
+      descricao_agencia TEXT NOT NULL, -- Ex: "Caixa Escritório" ou "Conta Corrente Itaú"
+      contato_nome TEXT,
+      telefone_agencia TEXT,
+      cep TEXT,
+      endereco TEXT,
+      bairro TEXT,
+      cidade TEXT,
+      uf TEXT,
+      saldo_inicial REAL DEFAULT 0,
+      saldo_atual REAL DEFAULT 0,
+      criado_em TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (usuariouuid) REFERENCES usuarios (usuariouuid) ON DELETE CASCADE,
+      FOREIGN KEY (codigo_banco) REFERENCES bancos (codigo_banco)
+    );
   `);
 
   // ─── MIGRAÇÕES ───────────────────────────────────────────────────
@@ -143,6 +177,11 @@ export const initDatabase = () => {
       ['00c9c57a-9a9b-4866-8111-9c67d9ec725b', 'Premium', 19.9, null, '2026-03-17 17:29:08.158005+00']
     );
   }
+  // Inserir o banco "virtual" para itens de Caixa
+  db.runSync(`
+    INSERT OR IGNORE INTO bancos (codigo_banco, descricao_banco, codigo_ispb)
+    VALUES (999, 'CAIXA / TESOURARIA', '00000000')
+  `);
 };
 
 // ... (restante das funções cadastrarPrimeiroUsuario, gravarLog, etc, permanecem iguais)

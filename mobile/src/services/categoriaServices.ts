@@ -21,6 +21,8 @@ export interface Categoria {
  * - Sem pai: Nível 1 (Grupo), não aceita lançamento.
  * - Com pai: Nível 2 (Subcategoria), aceita lançamento.
  */
+
+
 export const salvarCategoria = async (categoria: Categoria) => {
   const isUpdate = !!categoria.categoriauuid;
   const uuid = categoria.categoriauuid || uuidv4();

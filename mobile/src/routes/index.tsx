@@ -5,7 +5,8 @@ import Login from '../screens/Login';
 import Registrar from '../screens/Registrar';
 import Home from '../screens/Home';
 import Usuario from '../screens/Usuario';
-import Categorias from '../screens/Categorias';
+import Categorias from '../screens/Categorias'; // Lista de categorias (D e C) com navegação para FormCategoria
+import FormCategoria from '../screens/Categorias/FormCategoria'; // Puxa o Formulário
 
 const Stack = createNativeStackNavigator();
 
@@ -24,7 +25,11 @@ export default function Routes({ logado }: RoutesProps) {
         <Stack.Screen name="Registrar" component={Registrar} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Usuario" component={Usuario} />
+        
+        {/* TELAS DE CATEGORIA AQUI */}
         <Stack.Screen name="Categorias" component={Categorias} />
+        <Stack.Screen name="FormCategoria" component={FormCategoria} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
